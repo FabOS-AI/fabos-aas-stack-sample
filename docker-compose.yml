@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  registry:
+    image: eclipsebasyx/aas-registry:1.2.0
+    container_name: registry
+    ports:
+      - 4000:4000
+    environment:
+      - basyxregistry_registry_backend=InMemory
+      - basyxcontext_contextpath=/registry
+      - basyxcontext_contextport=4000
+      - basyxcontext_accesscontrolalloworigin=*
+  aas:
+    image: eclipsebasyx/aas-server:1.2.0
+    container_name: aas
+    ports:
+      - 4001:4001
+    environment:
+      - basyxaas_registry_path=http://registry:4000/registry/
+      - basyxaas_aas_backend=InMemory
+      - basyxaas_aas_source=/usr/share/config/camera_model.aasx
+      - basyxcontext_contextpath=/aasServer
+      - basyxcontext_contextport=4001
+      - basyxcontext_accesscontrolalloworigin=*
+      - waiting_for=[{"host":"registry","port":"4000"}]
+    volumes:
+      - ./config/:/usr/share/config
