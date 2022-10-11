@@ -21,7 +21,7 @@ services:
       - basyxcontext_accesscontrolalloworigin=*
       - basyxmqtt_server=tcp://mosquitto:1883
   aas:
-    image: eclipsebasyx/aas-server:1.2.0
+    image: eclipsebasyx/aas-server:1.1.0
     container_name: aas
     ports:
       - 4001:4001
