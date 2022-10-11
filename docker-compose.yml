@@ -1,5 +1,13 @@
 version: '3.8'
 services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    ports:
+      - 1883:1883
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/log:/mosquitto/log
   registry:
     image: eclipsebasyx/aas-registry:1.2.0
     container_name: registry
@@ -7,9 +15,11 @@ services:
       - 4000:4000
     environment:
       - basyxregistry_registry_backend=InMemory
+      - basyxregistry_registry_events=MQTT
       - basyxcontext_contextpath=/registry
       - basyxcontext_contextport=4000
       - basyxcontext_accesscontrolalloworigin=*
+      - basyxmqtt_server=tcp://mosquitto:1883
   aas:
     image: eclipsebasyx/aas-server:1.2.0
     container_name: aas
@@ -19,9 +29,11 @@ services:
       - basyxaas_registry_path=http://registry:4000/registry/
       - basyxaas_aas_backend=InMemory
       - basyxaas_aas_source=/usr/share/config/camera_model.aasx
+      - basyxaas_aas_events=MQTT
       - basyxcontext_contextpath=/aasServer
       - basyxcontext_contextport=4001
       - basyxcontext_accesscontrolalloworigin=*
+      - basyxmqtt_server=tcp://mosquitto:1883
       - waiting_for=[{"host":"registry","port":"4000"}]
     volumes:
       - ./config/:/usr/share/config
