@@ -2,7 +2,11 @@ version: '3.8'
 services:
   registry:
     image: eclipsebasyx/aas-registry:1.2.0
-    container_name: registry
+    restart: always
+    networks:
+      default:
+        aliases: 
+        - aas-registry
     ports:
       - 4000:4000
     environment:
@@ -13,10 +17,15 @@ services:
   aas:
     image: eclipsebasyx/aas-server:1.2.0
     container_name: aas
+    restart: always
+    networks:
+      default:
+        aliases: 
+        - aas-server
     ports:
       - 4001:4001
     environment:
-      - basyxaas_registry_path=http://registry:4000/registry/
+      - basyxaas_registry_path=http://aas-registry:4000/registry/
       - basyxaas_aas_backend=InMemory
       - basyxaas_aas_source=/usr/share/config/camera_model.aasx
       - basyxcontext_contextpath=/aasServer
